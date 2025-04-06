@@ -83,3 +83,26 @@ pivot = pd.crosstab(index=df['Descripción IMC'],
 sns.heatmap(pivot, annot=True, fmt='d', cmap='YlGnBu')
 plt.title('IMC vs PAB vs Actividad Física')
 guardar("6.1_imc_pab_actividad_heatmap")
+
+
+# Gráfico de barras apiladas con orden para las tres variables categóricas
+plt.figure(figsize=(10, 6))
+orden_imc = ['Normal', 'Sobrepeso', 'Obesidad']
+orden_riesgo = ['Bajo', 'Alto', 'Muy Alto']
+orden_actividad = ['Bajo', 'Moderado', 'Alto']
+
+# Reorganizar los datos para tener las 3 variables
+df_grouped = df.groupby(['Descripción IMC', 'Riesgo Cardiovascular', 'Actividad Física']).size().unstack(fill_value=0)
+
+# Reindexar las filas y columnas para asegurarse de que las categorías se presenten en el orden correcto
+df_grouped = df_grouped.reindex(orden_imc, level='Descripción IMC')
+df_grouped = df_grouped.reindex(orden_riesgo, level='Riesgo Cardiovascular')
+df_grouped = df_grouped.reindex(orden_actividad, level='Actividad Física', axis=1)
+
+# Graficar las barras apiladas
+df_grouped.plot(kind='bar', stacked=True, figsize=(12, 8), colormap='tab20')
+plt.title('Distribución de IMC, Riesgo Cardiovascular y Actividad Física')
+plt.xlabel('Categorías Combinadas (Descripción IMC, Riesgo Cardiovascular)')
+plt.ylabel('Frecuencia')
+plt.xticks(rotation=45)
+guardar("6.1_barras_apiladas_3variables")
